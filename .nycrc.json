@@ -1,0 +1,16 @@
+{
+  "cache": false,
+  "extension": [
+    ".ts"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "node_modules",
+    "dist"
+  ],
+  "all": true,
+  "reporter": [
+    "html",
+    "text"
+  ]
+}

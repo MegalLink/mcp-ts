@@ -1,0 +1,45 @@
+{
+  "name": "mcp-aws-ts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js 'tests/**/*.test.ts'",
+    "test:watch": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js --watch 'tests/**/*.test.ts'",
+    "test:file": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules nyc npm test && open coverage/index.html",
+    "test:coverage:file": "NODE_OPTIONS=--experimental-vm-modules nyc npm run test:file -- $FILE && open coverage/index.html"
+  },
+  "keywords": [
+    "mcp",
+    "aws",
+    "dynamo",
+    "s3"
+  ],
+  "author": "megalLink",
+  "license": "ISC",
+  "description": "MCP to manage aws dynamo and s3",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.799.0",
+    "@aws-sdk/client-s3": "^3.800.0",
+    "@aws-sdk/credential-providers": "^3.799.0",
+    "@aws-sdk/lib-dynamodb": "^3.799.0",
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.10.5",
+    "@types/sinon": "^17.0.2",
+    "@types/sinon-chai": "^3.2.12",
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "nyc": "^17.1.0",
+    "sinon": "^17.0.1",
+    "sinon-chai": "^3.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
