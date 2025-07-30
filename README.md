@@ -131,3 +131,25 @@ Verifica que:
 ## Licencia
 
 [MIT](LICENSE)
+
+## Development Setup
+Test locally mcp with inspector
+
+```bash
+npx -y @modelcontextprotocol/inspector npx -y tsx main.ts 
+```
+
+### Windsurf Configuration
+
+Add this to your Windsurf config:
+
+```json
+"mcp-aws-ts": {
+  "command": "npx",
+  "args": [
+    "-y",
+    "tsx",
+    "/route-of-this-project/mcp-aws-ts/main.ts"
+  ]
+}
+```
