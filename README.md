@@ -153,3 +153,21 @@ Add this to your Windsurf config:
   ]
 }
 ```
+
+Add on Visual studio:
+```json
+{
+	"servers": {
+		"my-mcp-server": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"tsx",
+				"/Users/jefersonnarvaez/Desktop/Development/AI/mcp-ts/main.ts"
+			]
+		}
+	},
+	"inputs": []
+}
+```

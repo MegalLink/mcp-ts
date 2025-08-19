@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import * as sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { expect } from 'chai';
