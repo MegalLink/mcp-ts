@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mcp-aws-ts:
+    build: .
+    container_name: mcp-aws-ts
+    restart: unless-stopped
+    # For MCP stdio communication, we'll use stdin_open and tty
+    stdin_open: true
+    tty: true
+    # Environment variables
+    environment:
+      - NODE_ENV=production
+    # If you need to expose ports in the future
+    # ports:
+    #   - "3000:3000"
+    

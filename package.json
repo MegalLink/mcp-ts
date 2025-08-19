@@ -4,6 +4,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "npx tsx main.ts",
+    "build": "tsc",
+    "docker:build": "docker build -t mcp-aws-ts .",
+    "docker:run": "docker run -it --rm mcp-aws-ts",
     "test": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js 'tests/**/*.test.ts'",
     "test:watch": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js --watch 'tests/**/*.test.ts'",
     "test:file": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js",

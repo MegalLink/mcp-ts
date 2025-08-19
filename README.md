@@ -171,3 +171,23 @@ Add on Visual studio:
 	"inputs": []
 }
 ```
+
+## Use with docker or podman replace docker
+Run 
+```bash
+docker compose up -d
+```
+Set on visual studio
+```json
+ "my-mcp-server": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+         "exec", 
+         "-i", 
+         "mcp-aws-ts",
+         "npx",
+         "tsx",
+         "main.ts"]
+    }
+```
