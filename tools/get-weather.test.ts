@@ -1,8 +1,8 @@
 import * as sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { expect } from 'chai';
-import { getWeatherTool } from '../../tools/get-weather.js';
-
+import { getWeatherTool } from './get-weather.js';
+ 
 import chai from 'chai';
 chai.use(sinonChai as any);
 

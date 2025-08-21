@@ -1,7 +1,7 @@
 import * as sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { expect } from 'chai';
-import { DynamoGateway } from '../../gateway/dynamo.js';
+import { DynamoGateway } from './dynamo.js';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
   DynamoDBDocumentClient, 

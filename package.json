@@ -28,7 +28,12 @@
     "@aws-sdk/client-s3": "^3.800.0",
     "@aws-sdk/credential-providers": "^3.799.0",
     "@aws-sdk/lib-dynamodb": "^3.799.0",
+    "@chroma-core/default-embed": "^0.1.8",
     "@modelcontextprotocol/sdk": "^1.10.2",
+    "chromadb": "^3.0.14",
+    "langchain": "^0.3.31",
+    "tsx": "^4.20.4",
+    "uuid": "^10.0.0",
     "zod": "^3.24.3"
   },
   "devDependencies": {
@@ -38,6 +43,7 @@
     "@types/node": "^20.10.5",
     "@types/sinon": "^17.0.2",
     "@types/sinon-chai": "^3.2.12",
+    "@types/uuid": "^10.0.0",
     "chai": "^4.3.10",
     "mocha": "^10.2.0",
     "nyc": "^17.1.0",

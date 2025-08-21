@@ -1,5 +1,5 @@
-# Use Node.js 18 LTS as base image
-FROM node:18-alpine
+# Use a glibc-based Node.js image to ensure binary compatibility
+FROM node:22-slim
 
 # Set working directory
 WORKDIR /app
@@ -7,22 +7,22 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies, including development ones like tsx
+RUN npm install
 
-# Copy source code
+# Copy the rest of the source code
 COPY . .
 
-# Create a non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
-
-# Change ownership of the app directory
+# Create a non-root user for better security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 RUN chown -R nextjs:nodejs /app
 USER nextjs
 
-# Expose port (though MCP uses stdio, this is for potential future extensions)
+# Expose port (optional, but good practice)
 EXPOSE 3000
 
-# Start the MCP server
-CMD ["npx", "tsx", "main.ts"]
+# Set the entrypoint to ensure the container always runs this command
+ENTRYPOINT ["npx", "tsx", "main.ts"]
+
+

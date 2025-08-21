@@ -1,8 +1,8 @@
-version: '3.8'
-
 services:
   mcp-aws-ts:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: mcp-aws-ts
     restart: unless-stopped
     # For MCP stdio communication, we'll use stdin_open and tty
@@ -14,4 +14,13 @@ services:
     # If you need to expose ports in the future
     # ports:
     #   - "3000:3000"
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    restart: unless-stopped
+    volumes:
+      - chroma_data:/data
+    # No ports exposed, only internal communication
     
+volumes:
+  chroma_data:
