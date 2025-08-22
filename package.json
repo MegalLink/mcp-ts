@@ -8,10 +8,13 @@
     "build": "tsc",
     "docker:build": "docker build -t mcp-aws-ts .",
     "docker:run": "docker run -it --rm mcp-aws-ts",
-    "test": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js 'tests/**/*.test.ts'",
-    "test:watch": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js --watch 'tests/**/*.test.ts'",
+    "test": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js '**/*.test.ts'",
+    "test:all": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js 'gateway/**/*.test.ts' 'services/**/*.test.ts'",
+    "test:gateway": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js 'gateway/**/*.test.ts'",
+    "test:services": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js 'services/**/*.test.ts'",
+    "test:watch": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js --watch '**/*.test.ts'",
     "test:file": "TS_NODE_PROJECT=tsconfig.test.json node --experimental-specifier-resolution=node --loader ts-node/esm node_modules/mocha/bin/mocha.js",
-    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules nyc npm test && open coverage/index.html",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules nyc npm run test:all && open coverage/index.html",
     "test:coverage:file": "NODE_OPTIONS=--experimental-vm-modules nyc npm run test:file -- $FILE && open coverage/index.html"
   },
   "keywords": [

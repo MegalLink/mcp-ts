@@ -119,11 +119,14 @@ export class ScraperService {
       maxUrls: defaultOptions.maxUrls,
       urlSelectors: [
         'a[href*="/docs"]',  // Documentation links
+        'a[href*="/documentation"]',  // Documentation links (alternative)
+        'a[href*="/help"]',  // Help links
         'nav a[href]',       // Navigation links
         '.sidebar a[href]',  // Sidebar links
         '.toc a[href]',      // Table of contents
         '.menu a[href]',     // Menu links
-        'main a[href]'       // Main content links
+        'main a[href]',      // Main content links
+        'body a[href]'       // All links in body (fallback)
       ]
     };
 
