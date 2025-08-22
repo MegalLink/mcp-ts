@@ -1,7 +1,15 @@
 import { ChromaGateway, Where, WhereDocument } from '../gateway/chromadb.js';
 import { v4 as uuidv4 } from 'uuid';
-import { COLLECTION_NAME } from '../shared/constants.js';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { COLLECTION_NAME, DOC_TYPES, METADATA_FIELDS } from '../shared/constants.js';
+import { StandardUrlMetadata, UrlDocumentInput, WhereClause } from '../shared/types.js';
+import { 
+  buildUrlDocumentWhere, 
+  buildWhereClause, 
+  createDocTypeCondition,
+  formatKeywordsForStorage,
+  generateSearchableText 
+} from '../shared/query-helpers.js';
+import { ScraperService } from './scraper.service.js';
 
 export interface DocumentResult {
   ids: string[];
@@ -14,52 +22,163 @@ export interface QueryOptions {
   queryTexts?: string[];
   queryEmbeddings?: number[][];
   nResults?: number;
-  where?: Where;
+  where?: Where | WhereClause;
   whereDocument?: WhereDocument;
 }
 
 export interface GetOptions {
   ids?: string[];
-  where?: Where;
+  where?: Where | WhereClause;
   limit?: number;
   offset?: number;
 }
 
+export interface UrlDocumentMetadata {
+  url: string;
+  title: string;
+  libraryName: string;
+  version: string;
+  category: string;
+  keywords: string[];
+  description?: string;
+  section?: string;
+  lastUpdated?: string;
+}
+
 export class RagService {
   private chroma: ChromaGateway;
-  private textSplitter: RecursiveCharacterTextSplitter;
+  private scraperService: ScraperService;
 
   constructor() {
     this.chroma = new ChromaGateway({ host: 'chromadb', port: 8000 });
-    this.textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 1000,
-      chunkOverlap: 200,
-    });
+    this.scraperService = new ScraperService();
   }
 
-  async addDocument(rawText: string, metadata: Record<string, any>): Promise<string[]> {
+  /**
+   * Add a URL document with rich metadata to the collection
+   * @param metadata URL document metadata
+   * @param extractContent Whether to extract and store the actual content
+   * @returns Document ID
+   */
+  async addUrlDocument(metadata: UrlDocumentInput, extractContent: boolean = false): Promise<string> {
     try {
-      const chunks = await this.textSplitter.splitText(rawText);
-      const ids = chunks.map(() => uuidv4());
-      const metadatas = chunks.map((_, index) => ({
-        ...metadata,
-        chunkNumber: index + 1,
-        totalChunks: chunks.length,
-        addedAt: new Date().toISOString(),
-      }));
+      const docId = uuidv4();
+      
+      // Create the document content - either just metadata or include scraped content
+      let documentContent = `${metadata.title}\n${metadata.description || ''}\n${metadata.keywords.join(' ')}`;
+      
+      if (extractContent) {
+        try {
+          const scrapedData = await this.scraperService.scrapeUrl(metadata.url);
+          documentContent = `${metadata.title}\n${scrapedData.content}\n${metadata.keywords.join(' ')}`;
+        } catch (error) {
+          console.warn(`Failed to extract content from ${metadata.url}, using metadata only:`, error);
+        }
+      }
+
+      const enrichedMetadata: StandardUrlMetadata = {
+        [METADATA_FIELDS.URL]: metadata.url,
+        [METADATA_FIELDS.TITLE]: metadata.title,
+        [METADATA_FIELDS.LIBRARY_NAME]: metadata.libraryName,
+        [METADATA_FIELDS.VERSION]: metadata.version,
+        [METADATA_FIELDS.CATEGORY]: metadata.category,
+        [METADATA_FIELDS.KEYWORDS]: formatKeywordsForStorage(metadata.keywords),
+        [METADATA_FIELDS.DESCRIPTION]: metadata.description || '',
+        [METADATA_FIELDS.SECTION]: metadata.section || '',
+        [METADATA_FIELDS.LAST_UPDATED]: metadata.lastUpdated || '',
+        [METADATA_FIELDS.DOC_TYPE]: DOC_TYPES.URL_DOCUMENT,
+        [METADATA_FIELDS.CONTENT_EXTRACTED]: extractContent,
+        [METADATA_FIELDS.ADDED_AT]: new Date().toISOString(),
+        [METADATA_FIELDS.SEARCHABLE_TEXT]: generateSearchableText(metadata),
+      };
 
       await this.chroma.addItems(COLLECTION_NAME, {
-        ids,
-        metadatas,
-        documents: chunks,
+        ids: [docId],
+        metadatas: [enrichedMetadata],
+        documents: [documentContent],
       });
 
-      console.log(`Added ${chunks.length} document chunks to collection '${COLLECTION_NAME}'`);
-      return ids;
+      console.log(`Added URL document to collection '${COLLECTION_NAME}': ${metadata.url}`);
+      return docId;
+    } catch (error) {
+      console.error('Failed to add URL document to ChromaDB:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Legacy method for backward compatibility
+   */
+  async addDocument(rawText: string, metadata: Record<string, any>): Promise<string[]> {
+    try {
+      const docId = uuidv4();
+      const enrichedMetadata = {
+        ...metadata,
+        [METADATA_FIELDS.DOC_TYPE]: DOC_TYPES.LEGACY_DOCUMENT,
+        [METADATA_FIELDS.ADDED_AT]: new Date().toISOString(),
+      };
+
+      await this.chroma.addItems(COLLECTION_NAME, {
+        ids: [docId],
+        metadatas: [enrichedMetadata],
+        documents: [rawText],
+      });
+
+      console.log(`Added legacy document to collection '${COLLECTION_NAME}'`);
+      return [docId];
     } catch (error) {
       console.error('Failed to add document to ChromaDB:', error);
       throw error;
     }
+  }
+
+  /**
+   * Search URLs by library name and version
+   */
+  async searchByLibrary(libraryName: string, version?: string, nResults: number = 10): Promise<DocumentResult> {
+    const where = buildUrlDocumentWhere({ libraryName, version });
+
+    return this.query({
+      queryTexts: [libraryName],
+      nResults,
+      where
+    });
+  }
+
+  /**
+   * Search URLs by category
+   */
+  async searchByCategory(category: string, libraryName?: string, nResults: number = 10): Promise<DocumentResult> {
+    const where = buildUrlDocumentWhere({ category, libraryName });
+
+    return this.query({
+      queryTexts: [category],
+      nResults,
+      where
+    });
+  }
+
+  /**
+   * Search URLs by keywords
+   */
+  async searchByKeywords(keywords: string[], nResults: number = 10): Promise<DocumentResult> {
+    const searchText = keywords.join(' ');
+    const where = createDocTypeCondition(DOC_TYPES.URL_DOCUMENT);
+    
+    return this.query({
+      queryTexts: [searchText],
+      nResults,
+      where
+    });
+  }
+
+  /**
+   * Get all URL documents for a specific library
+   */
+  async getLibraryUrls(libraryName: string, version?: string): Promise<DocumentResult> {
+    const where = buildUrlDocumentWhere({ libraryName, version });
+
+    return this.getDocuments({ where });
   }
 
   /**

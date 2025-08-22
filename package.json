@@ -30,6 +30,8 @@
     "@aws-sdk/lib-dynamodb": "^3.799.0",
     "@chroma-core/default-embed": "^0.1.8",
     "@modelcontextprotocol/sdk": "^1.10.2",
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
     "chromadb": "^3.0.14",
     "langchain": "^0.3.31",
     "tsx": "^4.20.4",
@@ -39,6 +41,7 @@
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/chai": "^4.3.11",
+    "@types/cheerio": "^0.22.35",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.10.5",
     "@types/sinon": "^17.0.2",

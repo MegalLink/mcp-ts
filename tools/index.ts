@@ -1,18 +1,13 @@
 import { ToolHandler } from "./types.js";
-import { getWeatherTool } from "./get-weather.js";
-import { createRagInformationTool } from "./create-rag-information.js";
-import { queryRagInformationTool } from "./query-rag-information.js";
-import { listRagInformationTool } from "./list-rag-information.js";
+import { searchDocumentationTool } from "./search-documentation.js";
+import { listDocumentationTool } from "./list-documentation.js";
+import { getUrlsFromUrlTool } from "./get-urls-from-url.js";
+import { bulkAddUrlsTool } from "./bulk-add-urls.js";
 
 export const tools: ToolHandler<any>[] = [
-  getWeatherTool,
-  createRagInformationTool,
-  queryRagInformationTool,
-  listRagInformationTool,
+  searchDocumentationTool,
+  listDocumentationTool,
+  getUrlsFromUrlTool,
+  bulkAddUrlsTool,
 ];
 
-export * from "./types.js";
-export * from "./get-weather.js";
-export * from "./create-rag-information.js";
-export * from "./query-rag-information.js";
-export * from "./list-rag-information.js";

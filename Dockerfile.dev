@@ -12,9 +12,9 @@ RUN npm install
 # Note: We'll use a volume mount in development, but this is needed for production builds
 COPY . .
 
-# Create a non-root user for better security
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
+# Create a non-root user for better security with matching UID
+RUN addgroup --system --gid 501 nodejs && \
+    adduser --system --uid 501 nextjs && \
     chown -R nextjs:nodejs /app
 
 # Switch to non-root user
